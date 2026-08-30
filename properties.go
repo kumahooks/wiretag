@@ -9,6 +9,14 @@ import "unsafe"
 // Pending TODO:
 // - taglib_property_set
 // - taglib_property_set_append
+// - TagLib_Variant_Type
+// - taglib_complex_property_set
+// - taglib_complex_property_set_append
+// - taglib_complex_property_keys
+// - taglib_complex_property_get
+// - taglib_complex_property_free_keys
+// - taglib_complex_property_free
+// - taglib_picture_from_complex_property
 
 // Properties returns every property of the file keyed by property name, and slice of strings for their values.
 // If the file is closed (either file or file.handle is nil), we return an error indicating this is undefined behavior.
