@@ -24,14 +24,14 @@ func (file *AudioFile) Artist() (string, error) {
 		return "", ErrFileClosed
 	}
 
-	cTitle := C.taglib_tag_artist(file.tag)
-	if cTitle == nil {
+	cArtist := C.taglib_tag_artist(file.tag)
+	if cArtist == nil {
 		C.taglib_tag_free_strings()
 		return "", nil
 	}
 	defer C.taglib_tag_free_strings()
 
-	return C.GoString(cTitle), nil
+	return C.GoString(cArtist), nil
 }
 
 func (file *AudioFile) Album() (string, error) {
@@ -39,12 +39,27 @@ func (file *AudioFile) Album() (string, error) {
 		return "", ErrFileClosed
 	}
 
-	cTitle := C.taglib_tag_album(file.tag)
-	if cTitle == nil {
+	cAlbum := C.taglib_tag_album(file.tag)
+	if cAlbum == nil {
 		C.taglib_tag_free_strings()
 		return "", nil
 	}
 	defer C.taglib_tag_free_strings()
 
-	return C.GoString(cTitle), nil
+	return C.GoString(cAlbum), nil
+}
+
+func (file *AudioFile) Comment() (string, error) {
+	if !file.isFileOpened() {
+		return "", ErrFileClosed
+	}
+
+	cComment := C.taglib_tag_comment(file.tag)
+	if cComment == nil {
+		C.taglib_tag_free_strings()
+		return "", nil
+	}
+	defer C.taglib_tag_free_strings()
+
+	return C.GoString(cComment), nil
 }

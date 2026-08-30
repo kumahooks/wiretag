@@ -148,3 +148,51 @@ func TestAlbumNilFile(t *testing.T) {
 		t.Fatalf("Album(nil): got %v, want ErrFileClosed", err)
 	}
 }
+
+func TestComment(t *testing.T) {
+	for _, testCase := range []struct {
+		audioFilePath string
+		wantComment   string
+	}{
+		{boaFilePath, "freedbID : 8A0AB60B"},
+		{venetianFilePath, "Remember to support artists."},
+		{wiynFilePath, "Visit https://whatisyourname.bandcamp.com"},
+	} {
+		audioFile, err := Open(testCase.audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotComment, err := audioFile.Comment()
+		if err != nil {
+			t.Fatalf("Comment(%s): %v", testCase.audioFilePath, err)
+		}
+		if gotComment != testCase.wantComment {
+			t.Fatalf("Comment(%s): got %q, want %q", testCase.audioFilePath, gotComment, testCase.wantComment)
+		}
+	}
+}
+
+func TestCommentClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	gotComment, err := audioFile.Comment()
+	if !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Comment(closed): got %v, want ErrFileClosed", err)
+	}
+	if gotComment != "" {
+		t.Fatalf("Comment(closed): got %q, want empty string", gotComment)
+	}
+}
+
+func TestCommentNilFile(t *testing.T) {
+	var file *AudioFile
+	if _, err := file.Comment(); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Comment(nil): got %v, want ErrFileClosed", err)
+	}
+}
