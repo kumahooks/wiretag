@@ -1,0 +1,116 @@
+{
+  "ACOUSTID_ID": [
+    "7886713a-cb29-41cc-be22-cb6b628a95cf"
+  ],
+  "ALBUM": [
+    "The Race of a Thousand Camels"
+  ],
+  "ALBUMARTIST": [
+    "bôa"
+  ],
+  "ALBUMARTISTSORT": [
+    "bôa"
+  ],
+  "ARTIST": [
+    "bôa"
+  ],
+  "ARTISTS": [
+    "bôa"
+  ],
+  "ARTISTSORT": [
+    "bôa"
+  ],
+  "ASIN": [
+    "B00003CK5Z"
+  ],
+  "BARCODE": [
+    "4988023038230"
+  ],
+  "CATALOGNUMBER": [
+    "PSCR-5688"
+  ],
+  "COMMENT": [
+    "freedbID : 8A0AB60B"
+  ],
+  "DATE": [
+    "1998-07-01"
+  ],
+  "DISCNUMBER": [
+    "1"
+  ],
+  "DISCTOTAL": [
+    "1"
+  ],
+  "GENRE": [
+    "misc"
+  ],
+  "ISRC": [
+    "JPPS09801060"
+  ],
+  "LABEL": [
+    "Polystar"
+  ],
+  "MEDIA": [
+    "CD"
+  ],
+  "MUSICBRAINZ_ALBUMARTISTID": [
+    "ca1dcba2-792c-4550-abf2-7b45396e81ca"
+  ],
+  "MUSICBRAINZ_ALBUMID": [
+    "8bd70552-0a26-466e-bfaf-49f0e5b65e5d"
+  ],
+  "MUSICBRAINZ_ARTISTID": [
+    "ca1dcba2-792c-4550-abf2-7b45396e81ca"
+  ],
+  "MUSICBRAINZ_RELEASEGROUPID": [
+    "2b81ce5f-7b48-3f75-a714-cbab421db712"
+  ],
+  "MUSICBRAINZ_RELEASETRACKID": [
+    "93b7a145-e44d-34ed-8401-ce55afc18b7b"
+  ],
+  "MUSICBRAINZ_TRACKID": [
+    "edbf8cf4-9c48-4e5b-beb3-854d804f5702"
+  ],
+  "ORIGINALDATE": [
+    "1998-07-01"
+  ],
+  "ORIGINALYEAR": [
+    "1998"
+  ],
+  "PERFORMER": [
+    "Ben Henderson (percussion)",
+    "Jasmine Rodgers (percussion)",
+    "Paul Turrell (percussion)",
+    "Ben Henderson (saxophone)",
+    "Paul Turrell (piano)",
+    "Paul Turrell (guitar)",
+    "Paul Turrell (keyboard)"
+  ],
+  "RELEASECOUNTRY": [
+    "JP"
+  ],
+  "RELEASESTATUS": [
+    "official"
+  ],
+  "RELEASETYPE": [
+    "album"
+  ],
+  "SCRIPT": [
+    "Latn"
+  ],
+  "TITLE": [
+    "Fool"
+  ],
+  "TOTALDISCS": [
+    "1"
+  ],
+  "TOTALTRACKS": [
+    "11"
+  ],
+  "TRACKNUMBER": [
+    "1"
+  ],
+  "TRACKTOTAL": [
+    "11"
+  ]
+}
