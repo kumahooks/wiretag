@@ -1,4 +1,4 @@
-// Package wiretag exposes Go bindings for the TagLib C++ library.
+// Package wiretag exposes Go bindings for the TagLib audio metadata library.
 package wiretag
 
 // Pending TODO:
