@@ -244,3 +244,51 @@ func TestGenreNilFile(t *testing.T) {
 		t.Fatalf("Genre(nil): got %v, want ErrFileClosed", err)
 	}
 }
+
+func TestYear(t *testing.T) {
+	for _, testCase := range []struct {
+		audioFilePath string
+		wantYear      int
+	}{
+		{boaFilePath, 1998},
+		{venetianFilePath, 2005},
+		{wiynFilePath, 2023},
+	} {
+		audioFile, err := Open(testCase.audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotYear, err := audioFile.Year()
+		if err != nil {
+			t.Fatalf("Year(%s): %v", testCase.audioFilePath, err)
+		}
+		if gotYear != testCase.wantYear {
+			t.Fatalf("Year(%s): got %d, want %d", testCase.audioFilePath, gotYear, testCase.wantYear)
+		}
+	}
+}
+
+func TestYearClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	gotYear, err := audioFile.Year()
+	if !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Year(closed): got %v, want ErrFileClosed", err)
+	}
+	if gotYear != 0 {
+		t.Fatalf("Year(closed): got %d, want 0", gotYear)
+	}
+}
+
+func TestYearNilFile(t *testing.T) {
+	var file *AudioFile
+	if _, err := file.Year(); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Year(nil): got %v, want ErrFileClosed", err)
+	}
+}

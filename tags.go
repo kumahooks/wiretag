@@ -78,3 +78,11 @@ func (file *AudioFile) Genre() (string, error) {
 
 	return C.GoString(cGenreString), nil
 }
+
+func (file *AudioFile) Year() (int, error) {
+	if !file.isFileOpened() {
+		return 0, ErrFileClosed
+	}
+
+	return int(C.taglib_tag_year(file.tag)), nil
+}
