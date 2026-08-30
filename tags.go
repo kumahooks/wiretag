@@ -33,3 +33,18 @@ func (file *AudioFile) Artist() (string, error) {
 
 	return C.GoString(cTitle), nil
 }
+
+func (file *AudioFile) Album() (string, error) {
+	if !file.isFileOpened() {
+		return "", ErrFileClosed
+	}
+
+	cTitle := C.taglib_tag_album(file.tag)
+	if cTitle == nil {
+		C.taglib_tag_free_strings()
+		return "", nil
+	}
+	defer C.taglib_tag_free_strings()
+
+	return C.GoString(cTitle), nil
+}
