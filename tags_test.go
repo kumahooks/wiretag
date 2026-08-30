@@ -292,3 +292,51 @@ func TestYearNilFile(t *testing.T) {
 		t.Fatalf("Year(nil): got %v, want ErrFileClosed", err)
 	}
 }
+
+func TestTrack(t *testing.T) {
+	for _, testCase := range []struct {
+		audioFilePath string
+		wantTrack     int
+	}{
+		{boaFilePath, 1},
+		{venetianFilePath, 10},
+		{wiynFilePath, 10},
+	} {
+		audioFile, err := Open(testCase.audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotTrack, err := audioFile.Track()
+		if err != nil {
+			t.Fatalf("Track(%s): %v", testCase.audioFilePath, err)
+		}
+		if gotTrack != testCase.wantTrack {
+			t.Fatalf("Track(%s): got %d, want %d", testCase.audioFilePath, gotTrack, testCase.wantTrack)
+		}
+	}
+}
+
+func TestTrackClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	gotTrack, err := audioFile.Track()
+	if !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Track(closed): got %v, want ErrFileClosed", err)
+	}
+	if gotTrack != 0 {
+		t.Fatalf("Track(closed): got %d, want 0", gotTrack)
+	}
+}
+
+func TestTrackNilFile(t *testing.T) {
+	var file *AudioFile
+	if _, err := file.Track(); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Track(nil): got %v, want ErrFileClosed", err)
+	}
+}

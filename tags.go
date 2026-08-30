@@ -86,3 +86,11 @@ func (file *AudioFile) Year() (int, error) {
 
 	return int(C.taglib_tag_year(file.tag)), nil
 }
+
+func (file *AudioFile) Track() (int, error) {
+	if !file.isFileOpened() {
+		return 0, ErrFileClosed
+	}
+
+	return int(C.taglib_tag_track(file.tag)), nil
+}
