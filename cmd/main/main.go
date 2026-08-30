@@ -14,7 +14,15 @@ func main() {
 		return
 	}
 
-	fmt.Printf("musicFile: %x\n", musicFile)
+	tags, err := musicFile.Properties()
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+		return
+	}
+
+	for name, values := range tags {
+		fmt.Printf("%s: %v\n", name, values)
+	}
 
 	musicFile.Close()
 }
