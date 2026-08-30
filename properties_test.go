@@ -194,3 +194,87 @@ func TestPropertyValuesNilFile(t *testing.T) {
 		t.Fatalf("PropertyValues(nil): got %v, want ErrFileClosed", err)
 	}
 }
+
+func TestPropertyKeys(t *testing.T) {
+	for _, testCase := range []struct {
+		audioFilePath string
+		wantTotalKeys int
+	}{
+		{boaFilePath, 36},
+		{venetianFilePath, 60},
+		{wiynFilePath, 8},
+	} {
+		audioFile, err := Open(testCase.audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotKeys, err := audioFile.PropertyKeys()
+		if err != nil {
+			t.Fatalf("PropertyKeys(%s): %v", testCase.audioFilePath, err)
+		}
+		if len(gotKeys) != testCase.wantTotalKeys {
+			t.Fatalf(
+				"PropertyKeys(%s): got %d keys %v, want %d",
+				testCase.audioFilePath,
+				len(gotKeys),
+				gotKeys,
+				testCase.wantTotalKeys,
+			)
+		}
+	}
+}
+
+func TestPropertyKeysMatchGolden(t *testing.T) {
+	for _, audioFilePath := range []string{boaFilePath, venetianFilePath, wiynFilePath} {
+		audioFile, err := Open(audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotKeys, err := audioFile.PropertyKeys()
+		if err != nil {
+			t.Fatalf("PropertyKeys(%s): %v", audioFilePath, err)
+		}
+
+		wantProperties, err := expectedProperties(audioFilePath)
+		if err != nil {
+			t.Fatalf("properties golden for %s: %v", audioFilePath, err)
+		}
+
+		if len(gotKeys) != len(wantProperties) {
+			t.Fatalf("PropertyKeys(%s): got %d keys, want %d", audioFilePath, len(gotKeys), len(wantProperties))
+		}
+
+		for _, gotKey := range gotKeys {
+			if _, ok := wantProperties[gotKey]; !ok {
+				t.Fatalf("PropertyKeys(%s): got key %s not in golden", audioFilePath, gotKey)
+			}
+		}
+	}
+}
+
+func TestPropertyKeysClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	gotKeys, err := audioFile.PropertyKeys()
+	if !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("PropertyKeys(closed): got %v, want ErrFileClosed", err)
+	}
+	if gotKeys != nil {
+		t.Fatalf("PropertyKeys(closed): got %v, want nil slice", gotKeys)
+	}
+}
+
+func TestPropertyKeysNilFile(t *testing.T) {
+	var file *AudioFile
+	if _, err := file.PropertyKeys(); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("PropertyKeys(nil): got %v, want ErrFileClosed", err)
+	}
+}
