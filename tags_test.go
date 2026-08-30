@@ -5,14 +5,47 @@ import (
 	"testing"
 )
 
-func TestTitle(t *testing.T) {
+func TestTags(t *testing.T) {
 	for _, testCase := range []struct {
 		audioFilePath string
 		wantTitle     string
+		wantArtist    string
+		wantAlbum     string
+		wantComment   string
+		wantGenre     string
+		wantYear      int
+		wantTrack     int
 	}{
-		{boaFilePath, "Fool"},
-		{venetianFilePath, "Kétsarkú mozgalom"},
-		{wiynFilePath, "we met a long long time ago."},
+		{
+			audioFilePath: boaFilePath,
+			wantTitle:     "Fool",
+			wantArtist:    "bôa",
+			wantAlbum:     "The Race of a Thousand Camels",
+			wantComment:   "freedbID : 8A0AB60B",
+			wantGenre:     "misc",
+			wantYear:      1998,
+			wantTrack:     1,
+		},
+		{
+			audioFilePath: venetianFilePath,
+			wantTitle:     "Kétsarkú mozgalom",
+			wantArtist:    "Venetian Snares",
+			wantAlbum:     "Rossz csillag alatt született",
+			wantComment:   "Remember to support artists.",
+			wantGenre:     "Electronic",
+			wantYear:      2005,
+			wantTrack:     10,
+		},
+		{
+			audioFilePath: wiynFilePath,
+			wantTitle:     "we met a long long time ago.",
+			wantArtist:    "What is Your Name?",
+			wantAlbum:     "beyond old names; everyone's song.",
+			wantComment:   "Visit https://whatisyourname.bandcamp.com",
+			wantGenre:     "",
+			wantYear:      2023,
+			wantTrack:     10,
+		},
 	} {
 		audioFile, err := Open(testCase.audioFilePath)
 		if err != nil {
@@ -27,46 +60,6 @@ func TestTitle(t *testing.T) {
 		if gotTitle != testCase.wantTitle {
 			t.Fatalf("Title(%s): got %q, want %q", testCase.audioFilePath, gotTitle, testCase.wantTitle)
 		}
-	}
-}
-
-func TestTitleClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
-	if err != nil {
-		t.Fatalf("Open: %v", err)
-	}
-	audioFile.Close()
-
-	gotTitle, err := audioFile.Title()
-	if !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Title(closed): got %v, want ErrFileClosed", err)
-	}
-	if gotTitle != "" {
-		t.Fatalf("Title(closed): got %q, want empty string", gotTitle)
-	}
-}
-
-func TestTitleNilFile(t *testing.T) {
-	var file *AudioFile
-	if _, err := file.Title(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Title(nil): got %v, want ErrFileClosed", err)
-	}
-}
-
-func TestArtist(t *testing.T) {
-	for _, testCase := range []struct {
-		audioFilePath string
-		wantArtist    string
-	}{
-		{boaFilePath, "bôa"},
-		{venetianFilePath, "Venetian Snares"},
-		{wiynFilePath, "What is Your Name?"},
-	} {
-		audioFile, err := Open(testCase.audioFilePath)
-		if err != nil {
-			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
-		}
-		t.Cleanup(audioFile.Close)
 
 		gotArtist, err := audioFile.Artist()
 		if err != nil {
@@ -75,46 +68,6 @@ func TestArtist(t *testing.T) {
 		if gotArtist != testCase.wantArtist {
 			t.Fatalf("Artist(%s): got %q, want %q", testCase.audioFilePath, gotArtist, testCase.wantArtist)
 		}
-	}
-}
-
-func TestArtistClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
-	if err != nil {
-		t.Fatalf("Open: %v", err)
-	}
-	audioFile.Close()
-
-	gotArtist, err := audioFile.Artist()
-	if !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Artist(closed): got %v, want ErrFileClosed", err)
-	}
-	if gotArtist != "" {
-		t.Fatalf("Artist(closed): got %q, want empty string", gotArtist)
-	}
-}
-
-func TestArtistNilFile(t *testing.T) {
-	var file *AudioFile
-	if _, err := file.Artist(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Artist(nil): got %v, want ErrFileClosed", err)
-	}
-}
-
-func TestAlbum(t *testing.T) {
-	for _, testCase := range []struct {
-		audioFilePath string
-		wantAlbum     string
-	}{
-		{boaFilePath, "The Race of a Thousand Camels"},
-		{venetianFilePath, "Rossz csillag alatt született"},
-		{wiynFilePath, "beyond old names; everyone's song."},
-	} {
-		audioFile, err := Open(testCase.audioFilePath)
-		if err != nil {
-			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
-		}
-		t.Cleanup(audioFile.Close)
 
 		gotAlbum, err := audioFile.Album()
 		if err != nil {
@@ -123,46 +76,6 @@ func TestAlbum(t *testing.T) {
 		if gotAlbum != testCase.wantAlbum {
 			t.Fatalf("Album(%s): got %q, want %q", testCase.audioFilePath, gotAlbum, testCase.wantAlbum)
 		}
-	}
-}
-
-func TestAlbumClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
-	if err != nil {
-		t.Fatalf("Open: %v", err)
-	}
-	audioFile.Close()
-
-	gotAlbum, err := audioFile.Album()
-	if !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Album(closed): got %v, want ErrFileClosed", err)
-	}
-	if gotAlbum != "" {
-		t.Fatalf("Album(closed): got %q, want empty string", gotAlbum)
-	}
-}
-
-func TestAlbumNilFile(t *testing.T) {
-	var file *AudioFile
-	if _, err := file.Album(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Album(nil): got %v, want ErrFileClosed", err)
-	}
-}
-
-func TestComment(t *testing.T) {
-	for _, testCase := range []struct {
-		audioFilePath string
-		wantComment   string
-	}{
-		{boaFilePath, "freedbID : 8A0AB60B"},
-		{venetianFilePath, "Remember to support artists."},
-		{wiynFilePath, "Visit https://whatisyourname.bandcamp.com"},
-	} {
-		audioFile, err := Open(testCase.audioFilePath)
-		if err != nil {
-			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
-		}
-		t.Cleanup(audioFile.Close)
 
 		gotComment, err := audioFile.Comment()
 		if err != nil {
@@ -171,46 +84,6 @@ func TestComment(t *testing.T) {
 		if gotComment != testCase.wantComment {
 			t.Fatalf("Comment(%s): got %q, want %q", testCase.audioFilePath, gotComment, testCase.wantComment)
 		}
-	}
-}
-
-func TestCommentClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
-	if err != nil {
-		t.Fatalf("Open: %v", err)
-	}
-	audioFile.Close()
-
-	gotComment, err := audioFile.Comment()
-	if !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Comment(closed): got %v, want ErrFileClosed", err)
-	}
-	if gotComment != "" {
-		t.Fatalf("Comment(closed): got %q, want empty string", gotComment)
-	}
-}
-
-func TestCommentNilFile(t *testing.T) {
-	var file *AudioFile
-	if _, err := file.Comment(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Comment(nil): got %v, want ErrFileClosed", err)
-	}
-}
-
-func TestGenre(t *testing.T) {
-	for _, testCase := range []struct {
-		audioFilePath string
-		wantGenre     string
-	}{
-		{boaFilePath, "misc"},
-		{venetianFilePath, "Electronic"},
-		{wiynFilePath, ""},
-	} {
-		audioFile, err := Open(testCase.audioFilePath)
-		if err != nil {
-			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
-		}
-		t.Cleanup(audioFile.Close)
 
 		gotGenre, err := audioFile.Genre()
 		if err != nil {
@@ -219,46 +92,6 @@ func TestGenre(t *testing.T) {
 		if gotGenre != testCase.wantGenre {
 			t.Fatalf("Genre(%s): got %q, want %q", testCase.audioFilePath, gotGenre, testCase.wantGenre)
 		}
-	}
-}
-
-func TestGenreClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
-	if err != nil {
-		t.Fatalf("Open: %v", err)
-	}
-	audioFile.Close()
-
-	gotGenre, err := audioFile.Genre()
-	if !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Genre(closed): got %v, want ErrFileClosed", err)
-	}
-	if gotGenre != "" {
-		t.Fatalf("Genre(closed): got %q, want empty string", gotGenre)
-	}
-}
-
-func TestGenreNilFile(t *testing.T) {
-	var file *AudioFile
-	if _, err := file.Genre(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Genre(nil): got %v, want ErrFileClosed", err)
-	}
-}
-
-func TestYear(t *testing.T) {
-	for _, testCase := range []struct {
-		audioFilePath string
-		wantYear      int
-	}{
-		{boaFilePath, 1998},
-		{venetianFilePath, 2005},
-		{wiynFilePath, 2023},
-	} {
-		audioFile, err := Open(testCase.audioFilePath)
-		if err != nil {
-			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
-		}
-		t.Cleanup(audioFile.Close)
 
 		gotYear, err := audioFile.Year()
 		if err != nil {
@@ -267,46 +100,6 @@ func TestYear(t *testing.T) {
 		if gotYear != testCase.wantYear {
 			t.Fatalf("Year(%s): got %d, want %d", testCase.audioFilePath, gotYear, testCase.wantYear)
 		}
-	}
-}
-
-func TestYearClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
-	if err != nil {
-		t.Fatalf("Open: %v", err)
-	}
-	audioFile.Close()
-
-	gotYear, err := audioFile.Year()
-	if !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Year(closed): got %v, want ErrFileClosed", err)
-	}
-	if gotYear != 0 {
-		t.Fatalf("Year(closed): got %d, want 0", gotYear)
-	}
-}
-
-func TestYearNilFile(t *testing.T) {
-	var file *AudioFile
-	if _, err := file.Year(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Year(nil): got %v, want ErrFileClosed", err)
-	}
-}
-
-func TestTrack(t *testing.T) {
-	for _, testCase := range []struct {
-		audioFilePath string
-		wantTrack     int
-	}{
-		{boaFilePath, 1},
-		{venetianFilePath, 10},
-		{wiynFilePath, 10},
-	} {
-		audioFile, err := Open(testCase.audioFilePath)
-		if err != nil {
-			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
-		}
-		t.Cleanup(audioFile.Close)
 
 		gotTrack, err := audioFile.Track()
 		if err != nil {
@@ -318,25 +111,84 @@ func TestTrack(t *testing.T) {
 	}
 }
 
-func TestTrackClosedFile(t *testing.T) {
+func TestTagStringGettersClosedFile(t *testing.T) {
 	audioFile, err := Open(boaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
 	audioFile.Close()
 
-	gotTrack, err := audioFile.Track()
-	if !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Track(closed): got %v, want ErrFileClosed", err)
-	}
-	if gotTrack != 0 {
-		t.Fatalf("Track(closed): got %d, want 0", gotTrack)
+	for _, testCase := range []struct {
+		getter func() (string, error)
+		name   string
+	}{
+		{audioFile.Title, "Title"},
+		{audioFile.Artist, "Artist"},
+		{audioFile.Album, "Album"},
+		{audioFile.Comment, "Comment"},
+		{audioFile.Genre, "Genre"},
+	} {
+		gotValue, err := testCase.getter()
+		if !errors.Is(err, ErrFileClosed) {
+			t.Fatalf("%s(closed): got %v, want ErrFileClosed", testCase.name, err)
+		}
+		if gotValue != "" {
+			t.Fatalf("%s(closed): got %q, want empty string", testCase.name, gotValue)
+		}
 	}
 }
 
-func TestTrackNilFile(t *testing.T) {
+func TestTagIntGettersClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	for _, testCase := range []struct {
+		getter func() (int, error)
+		name   string
+	}{
+		{audioFile.Year, "Year"},
+		{audioFile.Track, "Track"},
+	} {
+		gotValue, err := testCase.getter()
+		if !errors.Is(err, ErrFileClosed) {
+			t.Fatalf("%s(closed): got %v, want ErrFileClosed", testCase.name, err)
+		}
+		if gotValue != 0 {
+			t.Fatalf("%s(closed): got %d, want 0", testCase.name, gotValue)
+		}
+	}
+}
+
+func TestTagGettersNilFile(t *testing.T) {
 	var file *AudioFile
-	if _, err := file.Track(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("Track(nil): got %v, want ErrFileClosed", err)
+
+	for _, testCase := range []struct {
+		getter func() (string, error)
+		name   string
+	}{
+		{file.Title, "Title"},
+		{file.Artist, "Artist"},
+		{file.Album, "Album"},
+		{file.Comment, "Comment"},
+		{file.Genre, "Genre"},
+	} {
+		if _, err := testCase.getter(); !errors.Is(err, ErrFileClosed) {
+			t.Fatalf("%s(nil): got %v, want ErrFileClosed", testCase.name, err)
+		}
+	}
+
+	for _, testCase := range []struct {
+		getter func() (int, error)
+		name   string
+	}{
+		{file.Year, "Year"},
+		{file.Track, "Track"},
+	} {
+		if _, err := testCase.getter(); !errors.Is(err, ErrFileClosed) {
+			t.Fatalf("%s(nil): got %v, want ErrFileClosed", testCase.name, err)
+		}
 	}
 }

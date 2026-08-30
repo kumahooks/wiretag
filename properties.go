@@ -19,7 +19,7 @@ import "unsafe"
 // - taglib_picture_from_complex_property
 
 // Properties returns every property of the file keyed by property name, and slice of strings for their values.
-// If the file is closed (either file or file.handle is nil), we return an error indicating this is undefined behavior.
+// If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 //
 // If the file has no property whatsoever (taglib returns NULL at taglib_property_keys), we return an empty map. Same behavior
 // for a property with no values: we store an empty slice at that key.
@@ -37,7 +37,8 @@ func (file *AudioFile) Properties() (map[string][]string, error) {
 }
 
 // PropertyKeys returns every property key present in the file.
-// If the file is closed (either file or file.handle is nil), we return an error indicating this is undefined behavior.
+// The keys are uppercased by taglib: queries are case-insensitive, but the keys we return are always uppercased.
+// If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 //
 // If the file has no property whatsoever (taglib returns NULL at taglib_property_keys), we return an empty slice.
 func (file *AudioFile) PropertyKeys() ([]string, error) {
@@ -49,7 +50,7 @@ func (file *AudioFile) PropertyKeys() ([]string, error) {
 }
 
 // PropertyValues returns all values of a single property key as a slice of strings.
-// If the file is closed (either file or file.handle is nil), we return an error indicating this is undefined behavior.
+// If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 //
 // The key is case-insensitive. If the key is absent or holds no values, we return an empty slice.
 func (file *AudioFile) PropertyValues(propertyKey string) ([]string, error) {

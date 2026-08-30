@@ -7,11 +7,11 @@ import (
 
 func TestAudioProperties(t *testing.T) {
 	for _, testCase := range []struct {
-		audioFilePath    string
-		wantLength       int
-		wantBitrate      int
-		wantSampleRate   int
-		wantAudioChannel int
+		audioFilePath  string
+		wantLength     int
+		wantBitrate    int
+		wantSampleRate int
+		wantChannels   int
 	}{
 		{boaFilePath, 1, 446, 44100, 2},
 		{venetianFilePath, 1, 446, 44100, 2},
@@ -56,12 +56,12 @@ func TestAudioProperties(t *testing.T) {
 		if err != nil {
 			t.Fatalf("AudioChannels(%s): %v", testCase.audioFilePath, err)
 		}
-		if gotChannels != testCase.wantAudioChannel {
+		if gotChannels != testCase.wantChannels {
 			t.Fatalf(
 				"AudioChannels(%s): got %d, want %d",
 				testCase.audioFilePath,
 				gotChannels,
-				testCase.wantAudioChannel,
+				testCase.wantChannels,
 			)
 		}
 	}
@@ -74,38 +74,39 @@ func TestAudioPropertiesClosedFile(t *testing.T) {
 	}
 	audioFile.Close()
 
-	if got, err := audioFile.AudioLength(); !errors.Is(err, ErrFileClosed) || got != 0 {
-		t.Fatalf("AudioLength(closed): got (%d, %v), want (0, ErrFileClosed)", got, err)
-	}
-
-	if got, err := audioFile.AudioBitrate(); !errors.Is(err, ErrFileClosed) || got != 0 {
-		t.Fatalf("AudioBitrate(closed): got (%d, %v), want (0, ErrFileClosed)", got, err)
-	}
-
-	if got, err := audioFile.AudioSampleRate(); !errors.Is(err, ErrFileClosed) || got != 0 {
-		t.Fatalf("AudioSampleRate(closed): got (%d, %v), want (0, ErrFileClosed)", got, err)
-	}
-
-	if got, err := audioFile.AudioChannels(); !errors.Is(err, ErrFileClosed) || got != 0 {
-		t.Fatalf("AudioChannels(closed): got (%d, %v), want (0, ErrFileClosed)", got, err)
+	for _, testCase := range []struct {
+		getter func() (int, error)
+		name   string
+	}{
+		{audioFile.AudioLength, "AudioLength"},
+		{audioFile.AudioBitrate, "AudioBitrate"},
+		{audioFile.AudioSampleRate, "AudioSampleRate"},
+		{audioFile.AudioChannels, "AudioChannels"},
+	} {
+		gotValue, err := testCase.getter()
+		if !errors.Is(err, ErrFileClosed) {
+			t.Fatalf("%s(closed): got %v, want ErrFileClosed", testCase.name, err)
+		}
+		if gotValue != 0 {
+			t.Fatalf("%s(closed): got %d, want 0", testCase.name, gotValue)
+		}
 	}
 }
 
 func TestAudioPropertiesNilFile(t *testing.T) {
 	var file *AudioFile
-	if _, err := file.AudioLength(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("AudioLength(nil): got %v, want ErrFileClosed", err)
-	}
 
-	if _, err := file.AudioBitrate(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("AudioBitrate(nil): got %v, want ErrFileClosed", err)
-	}
-
-	if _, err := file.AudioSampleRate(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("AudioSampleRate(nil): got %v, want ErrFileClosed", err)
-	}
-
-	if _, err := file.AudioChannels(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("AudioChannels(nil): got %v, want ErrFileClosed", err)
+	for _, testCase := range []struct {
+		getter func() (int, error)
+		name   string
+	}{
+		{file.AudioLength, "AudioLength"},
+		{file.AudioBitrate, "AudioBitrate"},
+		{file.AudioSampleRate, "AudioSampleRate"},
+		{file.AudioChannels, "AudioChannels"},
+	} {
+		if _, err := testCase.getter(); !errors.Is(err, ErrFileClosed) {
+			t.Fatalf("%s(nil): got %v, want ErrFileClosed", testCase.name, err)
+		}
 	}
 }

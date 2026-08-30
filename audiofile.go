@@ -40,7 +40,7 @@ func Open(filePath string) (*AudioFile, error) {
 	}
 
 	if C.taglib_file_is_valid(fileHandle) != 1 {
-		freeAudioFile(fileHandle)
+		C.taglib_file_free(fileHandle)
 		return nil, ErrInvalid
 	}
 
@@ -57,7 +57,7 @@ func (file *AudioFile) Close() {
 		return
 	}
 
-	freeAudioFile(file.handle)
+	C.taglib_file_free(file.handle)
 
 	file.handle = nil
 	file.tag = nil
@@ -72,8 +72,4 @@ func (file *AudioFile) IsValid() bool {
 
 func (file *AudioFile) isFileOpened() bool {
 	return file != nil && file.handle != nil
-}
-
-func freeAudioFile(fileHandle *C.TagLib_File) {
-	C.taglib_file_free(fileHandle)
 }
