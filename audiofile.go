@@ -4,7 +4,10 @@ package wiretag
 // #include <taglib/tag_c.h>
 import "C"
 
-import "unsafe"
+import (
+	"sync"
+	"unsafe"
+)
 
 // Pending TODO:
 // - taglib_memory_iostream_new
@@ -16,6 +19,7 @@ import "unsafe"
 
 // AudioFile represents the taglib's TagLib_File, TagLib_Tag, and TagLib_AudioProperties of a given audio file.
 type AudioFile struct {
+	mu              sync.Mutex
 	handle          *C.TagLib_File
 	tag             *C.TagLib_Tag
 	audioProperties *C.TagLib_AudioProperties
@@ -53,7 +57,14 @@ func Open(filePath string) (*AudioFile, error) {
 
 // Close frees the memory allocated to the audio file's bytestream with taglib's taglib_file_free function.
 func (file *AudioFile) Close() {
-	if file == nil || file.handle == nil {
+	if file == nil {
+		return
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return
 	}
 
@@ -67,9 +78,16 @@ func (file *AudioFile) Close() {
 // IsValid reports whether the audio file is open, readable, and valid information for the Tag and/or AudioProperties
 // was found. It is the direct equivalent of taglib_file_is_valid.
 func (file *AudioFile) IsValid() bool {
-	return file.isFileOpened() && C.taglib_file_is_valid(file.handle) == 1
-}
+	if file == nil {
+		return false
+	}
 
-func (file *AudioFile) isFileOpened() bool {
-	return file != nil && file.handle != nil
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
+		return false
+	}
+
+	return C.taglib_file_is_valid(file.handle) == 1
 }

@@ -24,7 +24,14 @@ import "unsafe"
 // If the file has no property whatsoever (taglib returns NULL at taglib_property_keys), we return an empty map. Same behavior
 // for a property with no values: we store an empty slice at that key.
 func (file *AudioFile) Properties() (map[string][]string, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return nil, ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return nil, ErrFileClosed
 	}
 
@@ -42,7 +49,14 @@ func (file *AudioFile) Properties() (map[string][]string, error) {
 //
 // If the file has no property whatsoever (taglib returns NULL at taglib_property_keys), we return an empty slice.
 func (file *AudioFile) PropertyKeys() ([]string, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return nil, ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return nil, ErrFileClosed
 	}
 
@@ -54,7 +68,14 @@ func (file *AudioFile) PropertyKeys() ([]string, error) {
 //
 // The key is case-insensitive. If the key is absent or holds no values, we return an empty slice.
 func (file *AudioFile) PropertyValues(propertyKey string) ([]string, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return nil, ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return nil, ErrFileClosed
 	}
 

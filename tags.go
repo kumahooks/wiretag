@@ -17,7 +17,14 @@ import "unsafe"
 // Title returns the track title of the file.
 // If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 func (file *AudioFile) Title() (string, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return "", ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return "", ErrFileClosed
 	}
 
@@ -37,7 +44,14 @@ func (file *AudioFile) Title() (string, error) {
 // Artist returns the artist name of the file.
 // If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 func (file *AudioFile) Artist() (string, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return "", ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return "", ErrFileClosed
 	}
 
@@ -57,7 +71,14 @@ func (file *AudioFile) Artist() (string, error) {
 // Album returns the album name of the file.
 // If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 func (file *AudioFile) Album() (string, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return "", ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return "", ErrFileClosed
 	}
 
@@ -77,7 +98,14 @@ func (file *AudioFile) Album() (string, error) {
 // Comment returns the comment of the file.
 // If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 func (file *AudioFile) Comment() (string, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return "", ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return "", ErrFileClosed
 	}
 
@@ -97,7 +125,14 @@ func (file *AudioFile) Comment() (string, error) {
 // Genre returns the genre of the file.
 // If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 func (file *AudioFile) Genre() (string, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return "", ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return "", ErrFileClosed
 	}
 
@@ -117,7 +152,14 @@ func (file *AudioFile) Genre() (string, error) {
 // Year returns the year of the file.
 // If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 func (file *AudioFile) Year() (int, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return 0, ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return 0, ErrFileClosed
 	}
 
@@ -131,7 +173,14 @@ func (file *AudioFile) Year() (int, error) {
 // Track returns the track number of the file.
 // If the file is closed (either file or file.handle is nil), we return ErrFileClosed.
 func (file *AudioFile) Track() (int, error) {
-	if !file.isFileOpened() {
+	if file == nil {
+		return 0, ErrFileClosed
+	}
+
+	file.mu.Lock()
+	defer file.mu.Unlock()
+
+	if file.handle == nil {
 		return 0, ErrFileClosed
 	}
 

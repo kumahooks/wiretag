@@ -15,13 +15,13 @@ func TestOpen(t *testing.T) {
 		}
 		t.Cleanup(audioFile.Close)
 
-		if !audioFile.isFileOpened() {
+		if audioFile.handle == nil {
 			t.Fatalf("Open(%s): handle not opened", path)
 		}
 
 		audioFile.Close()
 
-		if audioFile.isFileOpened() {
+		if audioFile.handle != nil {
 			t.Fatalf("Close(%s): handle still open", path)
 		}
 	}
