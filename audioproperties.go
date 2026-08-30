@@ -11,7 +11,7 @@ func (file *AudioFile) AudioLength() (int, error) {
 	return int(C.taglib_audioproperties_length(file.audioProperties)), nil
 }
 
-func (file *AudioFile) AudioBitRate() (int, error) {
+func (file *AudioFile) AudioBitrate() (int, error) {
 	if !file.isFileOpened() {
 		return 0, ErrFileClosed
 	}

@@ -9,7 +9,7 @@ func TestAudioProperties(t *testing.T) {
 	for _, testCase := range []struct {
 		audioFilePath    string
 		wantLength       int
-		wantBitRate      int
+		wantBitrate      int
 		wantSampleRate   int
 		wantAudioChannel int
 	}{
@@ -31,12 +31,12 @@ func TestAudioProperties(t *testing.T) {
 			t.Fatalf("AudioLength(%s): got %d, want %d", testCase.audioFilePath, gotLength, testCase.wantLength)
 		}
 
-		gotBitRate, err := audioFile.AudioBitRate()
+		gotBitrate, err := audioFile.AudioBitrate()
 		if err != nil {
-			t.Fatalf("AudioBitRate(%s): %v", testCase.audioFilePath, err)
+			t.Fatalf("AudioBitrate(%s): %v", testCase.audioFilePath, err)
 		}
-		if gotBitRate != testCase.wantBitRate {
-			t.Fatalf("AudioBitRate(%s): got %d, want %d", testCase.audioFilePath, gotBitRate, testCase.wantBitRate)
+		if gotBitrate != testCase.wantBitrate {
+			t.Fatalf("AudioBitrate(%s): got %d, want %d", testCase.audioFilePath, gotBitrate, testCase.wantBitrate)
 		}
 
 		gotSampleRate, err := audioFile.AudioSampleRate()
@@ -78,8 +78,8 @@ func TestAudioPropertiesClosedFile(t *testing.T) {
 		t.Fatalf("AudioLength(closed): got (%d, %v), want (0, ErrFileClosed)", got, err)
 	}
 
-	if got, err := audioFile.AudioBitRate(); !errors.Is(err, ErrFileClosed) || got != 0 {
-		t.Fatalf("AudioBitRate(closed): got (%d, %v), want (0, ErrFileClosed)", got, err)
+	if got, err := audioFile.AudioBitrate(); !errors.Is(err, ErrFileClosed) || got != 0 {
+		t.Fatalf("AudioBitrate(closed): got (%d, %v), want (0, ErrFileClosed)", got, err)
 	}
 
 	if got, err := audioFile.AudioSampleRate(); !errors.Is(err, ErrFileClosed) || got != 0 {
@@ -97,8 +97,8 @@ func TestAudioPropertiesNilFile(t *testing.T) {
 		t.Fatalf("AudioLength(nil): got %v, want ErrFileClosed", err)
 	}
 
-	if _, err := file.AudioBitRate(); !errors.Is(err, ErrFileClosed) {
-		t.Fatalf("AudioBitRate(nil): got %v, want ErrFileClosed", err)
+	if _, err := file.AudioBitrate(); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("AudioBitrate(nil): got %v, want ErrFileClosed", err)
 	}
 
 	if _, err := file.AudioSampleRate(); !errors.Is(err, ErrFileClosed) {
