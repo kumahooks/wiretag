@@ -4,16 +4,7 @@ package wiretag
 // #include <taglib/tag_c.h>
 import "C"
 
-import (
-	"errors"
-	"unsafe"
-)
-
-var (
-	ErrOpen       = errors.New("could not open file")
-	ErrInvalid    = errors.New("invalid audio file")
-	ErrFileClosed = errors.New("audio file is closed")
-)
+import "unsafe"
 
 // propertyValues fetches all values of a single property key, returning as an array of strings.
 // taglib_property_get returns NULL if the values are empty, and in this case, we simply return an empty array.

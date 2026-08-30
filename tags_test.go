@@ -1,0 +1,102 @@
+package wiretag
+
+import (
+	"errors"
+	"testing"
+)
+
+func TestTitle(t *testing.T) {
+	for _, testCase := range []struct {
+		audioFilePath string
+		wantTitle     string
+	}{
+		{boaFilePath, "Fool"},
+		{venetianFilePath, "Kétsarkú mozgalom"},
+		{wiynFilePath, "we met a long long time ago."},
+	} {
+		audioFile, err := Open(testCase.audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotTitle, err := audioFile.Title()
+		if err != nil {
+			t.Fatalf("Title(%s): %v", testCase.audioFilePath, err)
+		}
+		if gotTitle != testCase.wantTitle {
+			t.Fatalf("Title(%s): got %q, want %q", testCase.audioFilePath, gotTitle, testCase.wantTitle)
+		}
+	}
+}
+
+func TestTitleClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	gotTitle, err := audioFile.Title()
+	if !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Title(closed): got %v, want ErrFileClosed", err)
+	}
+	if gotTitle != "" {
+		t.Fatalf("Title(closed): got %q, want empty string", gotTitle)
+	}
+}
+
+func TestTitleNilFile(t *testing.T) {
+	var file *AudioFile
+	if _, err := file.Title(); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Title(nil): got %v, want ErrFileClosed", err)
+	}
+}
+
+func TestArtist(t *testing.T) {
+	for _, testCase := range []struct {
+		audioFilePath string
+		wantArtist    string
+	}{
+		{boaFilePath, "bôa"},
+		{venetianFilePath, "Venetian Snares"},
+		{wiynFilePath, "What is Your Name?"},
+	} {
+		audioFile, err := Open(testCase.audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotArtist, err := audioFile.Artist()
+		if err != nil {
+			t.Fatalf("Artist(%s): %v", testCase.audioFilePath, err)
+		}
+		if gotArtist != testCase.wantArtist {
+			t.Fatalf("Artist(%s): got %q, want %q", testCase.audioFilePath, gotArtist, testCase.wantArtist)
+		}
+	}
+}
+
+func TestArtistClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	gotArtist, err := audioFile.Artist()
+	if !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Artist(closed): got %v, want ErrFileClosed", err)
+	}
+	if gotArtist != "" {
+		t.Fatalf("Artist(closed): got %q, want empty string", gotArtist)
+	}
+}
+
+func TestArtistNilFile(t *testing.T) {
+	var file *AudioFile
+	if _, err := file.Artist(); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Artist(nil): got %v, want ErrFileClosed", err)
+	}
+}
