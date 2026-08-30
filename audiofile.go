@@ -6,6 +6,14 @@ import "C"
 
 import "unsafe"
 
+// Pending TODO:
+// - taglib_memory_iostream_new
+// - taglib_iostream_free
+// - TagLib_File_Type
+// - taglib_file_new_type
+// - taglib_file_new_iostream
+// - taglib_file_save
+
 // AudioFile represents the taglib's TagLib_File, TagLib_Tag, and TagLib_AudioProperties of a given audio file.
 type AudioFile struct {
 	handle          *C.TagLib_File
@@ -31,8 +39,8 @@ func Open(filePath string) (*AudioFile, error) {
 		return nil, ErrOpen
 	}
 
-	if C.taglib_file_is_valid(fileHandle) == 0 {
-		C.taglib_file_free(fileHandle)
+	if !IsValidAudioFile(fileHandle) {
+		freeAudioFile(fileHandle)
 		return nil, ErrInvalid
 	}
 
@@ -49,7 +57,7 @@ func (file *AudioFile) Close() {
 		return
 	}
 
-	C.taglib_file_free(file.handle)
+	freeAudioFile(file.handle)
 
 	file.handle = nil
 	file.tag = nil
@@ -58,4 +66,12 @@ func (file *AudioFile) Close() {
 
 func (file *AudioFile) isFileOpened() bool {
 	return file != nil && file.handle != nil
+}
+
+func IsValidAudioFile(fileHandle *C.TagLib_File) bool {
+	return C.taglib_file_is_valid(fileHandle) == 1
+}
+
+func freeAudioFile(fileHandle *C.TagLib_File) {
+	C.taglib_file_free(fileHandle)
 }

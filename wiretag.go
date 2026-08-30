@@ -1,2 +1,2 @@
-// Package wiretag exposes Go bindings for popular taglib C++ library.
+// Package wiretag exposes Go bindings for the TagLib C++ library.
 package wiretag
