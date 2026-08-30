@@ -6,20 +6,9 @@ import "C"
 
 import "unsafe"
 
-// propertyValues fetches all values of a single property key, returning as an array of strings.
-// taglib_property_get returns NULL if the values are empty, and in this case, we simply return an empty array.
-func (file *AudioFile) propertyValues(propertyKey string) []string {
-	cPropertyKey := C.CString(propertyKey)
-	defer C.free(unsafe.Pointer(cPropertyKey))
-
-	cPropertyValues := C.taglib_property_get(file.handle, cPropertyKey)
-	if cPropertyValues == nil {
-		return []string{}
-	}
-	defer C.taglib_property_free(cPropertyValues)
-
-	return cStringSlice(cPropertyValues)
-}
+// Pending TODO:
+// - taglib_property_set
+// - taglib_property_set_append
 
 // Properties returns every property of the file keyed by property name, and string arrays for their values.
 // If the file is closed (either file or file.handle is nil), we return an error indicating this is undefined behavior.
@@ -44,3 +33,31 @@ func (file *AudioFile) Properties() (map[string][]string, error) {
 
 	return propertyMap, nil
 }
+
+// PropertyValues returns all values of a single property key as an array of strings.
+// If the file is closed (either file or file.handle is nil), we return an error indicating this is undefined behavior.
+//
+// The key is case-insensitive. If the key is absent or holds no values, we return an empty array.
+func (file *AudioFile) PropertyValues(propertyKey string) ([]string, error) {
+	if !file.isFileOpened() {
+		return nil, ErrFileClosed
+	}
+
+	return file.propertyValues(propertyKey), nil
+}
+
+// propertyValues fetches all values of a single property key, returning as an array of strings.
+// taglib_property_get returns NULL if the values are empty, and in this case, we simply return an empty array.
+func (file *AudioFile) propertyValues(propertyKey string) []string {
+	cPropertyKey := C.CString(propertyKey)
+	defer C.free(unsafe.Pointer(cPropertyKey))
+
+	cPropertyValues := C.taglib_property_get(file.handle, cPropertyKey)
+	if cPropertyValues == nil {
+		return []string{}
+	}
+	defer C.taglib_property_free(cPropertyValues)
+
+	return cStringSlice(cPropertyValues)
+}
+

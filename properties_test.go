@@ -101,3 +101,96 @@ func TestPropertiesNilFile(t *testing.T) {
 		t.Fatalf("Properties(nil): got %v, want ErrFileClosed", err)
 	}
 }
+
+func TestPropertyValues(t *testing.T) {
+	for _, testCase := range []struct {
+		audioFilePath string
+		propertyKey   string
+		wantValues    []string
+	}{
+		{boaFilePath, "ARTIST", []string{"bôa"}},
+		{boaFilePath, "PERFORMER", []string{
+			"Ben Henderson (percussion)",
+			"Jasmine Rodgers (percussion)",
+			"Paul Turrell (percussion)",
+			"Ben Henderson (saxophone)",
+			"Paul Turrell (piano)",
+			"Paul Turrell (guitar)",
+			"Paul Turrell (keyboard)",
+		}},
+		{boaFilePath, "MISSING_KEY", []string{}},
+	} {
+		audioFile, err := Open(testCase.audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotValues, err := audioFile.PropertyValues(testCase.propertyKey)
+		if err != nil {
+			t.Fatalf("PropertyValues(%s, %s): %v", testCase.audioFilePath, testCase.propertyKey, err)
+		}
+
+		if len(gotValues) != len(testCase.wantValues) {
+			t.Fatalf(
+				"PropertyValues(%s, %s): got %d values, want %d",
+				testCase.audioFilePath,
+				testCase.propertyKey,
+				len(gotValues),
+				len(testCase.wantValues),
+			)
+		}
+
+		for i, wantValue := range testCase.wantValues {
+			if gotValues[i] != wantValue {
+				t.Fatalf(
+					"PropertyValues(%s, %s)[%d]: got %q, want %q",
+					testCase.audioFilePath,
+					testCase.propertyKey,
+					i,
+					gotValues[i],
+					wantValue,
+				)
+			}
+		}
+	}
+}
+
+func TestPropertyValuesCaseInsensitive(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	t.Cleanup(audioFile.Close)
+
+	gotValues, err := audioFile.PropertyValues("artist")
+	if err != nil {
+		t.Fatalf("PropertyValues(lowercase): %v", err)
+	}
+	if len(gotValues) != 1 || gotValues[0] != "bôa" {
+		t.Fatalf("PropertyValues(lowercase): got %v, want [bôa]", gotValues)
+	}
+}
+
+func TestPropertyValuesClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	gotValues, err := audioFile.PropertyValues("ARTIST")
+	if !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("PropertyValues(closed): got %v, want ErrFileClosed", err)
+	}
+	if gotValues != nil {
+		t.Fatalf("PropertyValues(closed): got %v, want nil slice", gotValues)
+	}
+}
+
+func TestPropertyValuesNilFile(t *testing.T) {
+	var file *AudioFile
+	if _, err := file.PropertyValues("ARTIST"); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("PropertyValues(nil): got %v, want ErrFileClosed", err)
+	}
+}
