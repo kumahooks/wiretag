@@ -13,9 +13,11 @@ func TestAudioProperties(t *testing.T) {
 		wantSampleRate int
 		wantChannels   int
 	}{
-		{boaFilePath, 1, 446, 44100, 2},
-		{venetianFilePath, 1, 446, 44100, 2},
-		{wiynFilePath, 1, 45, 44100, 1},
+		{completeBoaFilePath, 1, 446, 44100, 2},
+		{completeVenetianFilePath, 1, 446, 44100, 2},
+		{completeWiynFilePath, 1, 45, 44100, 1},
+		{completeTogawaFilePath, 1, 99, 44100, 2},
+		{missingTogawaFilePath, 1, 99, 44100, 2},
 	} {
 		audioFile, err := Open(testCase.audioFilePath)
 		if err != nil {
@@ -68,7 +70,7 @@ func TestAudioProperties(t *testing.T) {
 }
 
 func TestAudioPropertiesClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
+	audioFile, err := Open(completeBoaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}

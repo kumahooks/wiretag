@@ -26,7 +26,12 @@ func expectedProperties(audioFilePath string) (map[string][]string, error) {
 }
 
 func TestPropertiesMatchesGolden(t *testing.T) {
-	for _, audioFilePath := range []string{boaFilePath, venetianFilePath, wiynFilePath} {
+	for _, audioFilePath := range []string{
+		completeBoaFilePath,
+		completeVenetianFilePath,
+		completeWiynFilePath,
+		completeTogawaFilePath,
+	} {
 		audioFile, err := Open(audioFilePath)
 		if err != nil {
 			t.Fatalf("Open(%s): %v", audioFilePath, err)
@@ -80,7 +85,7 @@ func TestPropertiesMatchesGolden(t *testing.T) {
 }
 
 func TestPropertiesClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
+	audioFile, err := Open(completeBoaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
@@ -102,14 +107,32 @@ func TestPropertiesNilFile(t *testing.T) {
 	}
 }
 
+// A file without any tags still yields an empty, non-nil property map, because taglib synthesizes an empty tag for valid
+// files, so absence of metadata is reported as empty rather than as an error.
+func TestPropertiesMissingMetadata(t *testing.T) {
+	audioFile, err := Open(missingTogawaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	t.Cleanup(audioFile.Close)
+
+	gotProperties, err := audioFile.Properties()
+	if err != nil {
+		t.Fatalf("Properties: %v", err)
+	}
+	if len(gotProperties) != 0 {
+		t.Fatalf("Properties: got %v, want empty map", gotProperties)
+	}
+}
+
 func TestPropertyValues(t *testing.T) {
 	for _, testCase := range []struct {
 		audioFilePath string
 		propertyKey   string
 		wantValues    []string
 	}{
-		{boaFilePath, "ARTIST", []string{"bôa"}},
-		{boaFilePath, "PERFORMER", []string{
+		{completeBoaFilePath, "ARTIST", []string{"bôa"}},
+		{completeBoaFilePath, "PERFORMER", []string{
 			"Ben Henderson (percussion)",
 			"Jasmine Rodgers (percussion)",
 			"Paul Turrell (percussion)",
@@ -118,7 +141,7 @@ func TestPropertyValues(t *testing.T) {
 			"Paul Turrell (guitar)",
 			"Paul Turrell (keyboard)",
 		}},
-		{boaFilePath, "MISSING_KEY", []string{}},
+		{completeBoaFilePath, "MISSING_KEY", []string{}},
 	} {
 		audioFile, err := Open(testCase.audioFilePath)
 		if err != nil {
@@ -157,7 +180,7 @@ func TestPropertyValues(t *testing.T) {
 }
 
 func TestPropertyValuesCaseInsensitive(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
+	audioFile, err := Open(completeBoaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
@@ -173,7 +196,7 @@ func TestPropertyValuesCaseInsensitive(t *testing.T) {
 }
 
 func TestPropertyValuesClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
+	audioFile, err := Open(completeBoaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
@@ -200,9 +223,9 @@ func TestPropertyKeys(t *testing.T) {
 		audioFilePath string
 		wantTotalKeys int
 	}{
-		{boaFilePath, 36},
-		{venetianFilePath, 60},
-		{wiynFilePath, 8},
+		{completeBoaFilePath, 36},
+		{completeVenetianFilePath, 60},
+		{completeWiynFilePath, 8},
 	} {
 		audioFile, err := Open(testCase.audioFilePath)
 		if err != nil {
@@ -227,7 +250,12 @@ func TestPropertyKeys(t *testing.T) {
 }
 
 func TestPropertyKeysMatchGolden(t *testing.T) {
-	for _, audioFilePath := range []string{boaFilePath, venetianFilePath, wiynFilePath} {
+	for _, audioFilePath := range []string{
+		completeBoaFilePath,
+		completeVenetianFilePath,
+		completeWiynFilePath,
+		completeTogawaFilePath,
+	} {
 		audioFile, err := Open(audioFilePath)
 		if err != nil {
 			t.Fatalf("Open(%s): %v", audioFilePath, err)
@@ -257,7 +285,7 @@ func TestPropertyKeysMatchGolden(t *testing.T) {
 }
 
 func TestPropertyKeysClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
+	audioFile, err := Open(completeBoaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
@@ -276,5 +304,22 @@ func TestPropertyKeysNilFile(t *testing.T) {
 	var file *AudioFile
 	if _, err := file.PropertyKeys(); !errors.Is(err, ErrFileClosed) {
 		t.Fatalf("PropertyKeys(nil): got %v, want ErrFileClosed", err)
+	}
+}
+
+// PropertyKeys on a file with no metadata returns the empty-slice contract instead of an error.
+func TestPropertyKeysMissingMetadata(t *testing.T) {
+	audioFile, err := Open(missingTogawaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	t.Cleanup(audioFile.Close)
+
+	gotKeys, err := audioFile.PropertyKeys()
+	if err != nil {
+		t.Fatalf("PropertyKeys: %v", err)
+	}
+	if len(gotKeys) != 0 {
+		t.Fatalf("PropertyKeys: got %v, want empty slice", gotKeys)
 	}
 }

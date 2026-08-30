@@ -17,7 +17,7 @@ func TestTags(t *testing.T) {
 		wantTrack     int
 	}{
 		{
-			audioFilePath: boaFilePath,
+			audioFilePath: completeBoaFilePath,
 			wantTitle:     "Fool",
 			wantArtist:    "bôa",
 			wantAlbum:     "The Race of a Thousand Camels",
@@ -27,7 +27,7 @@ func TestTags(t *testing.T) {
 			wantTrack:     1,
 		},
 		{
-			audioFilePath: venetianFilePath,
+			audioFilePath: completeVenetianFilePath,
 			wantTitle:     "Kétsarkú mozgalom",
 			wantArtist:    "Venetian Snares",
 			wantAlbum:     "Rossz csillag alatt született",
@@ -37,7 +37,7 @@ func TestTags(t *testing.T) {
 			wantTrack:     10,
 		},
 		{
-			audioFilePath: wiynFilePath,
+			audioFilePath: completeWiynFilePath,
 			wantTitle:     "we met a long long time ago.",
 			wantArtist:    "What is Your Name?",
 			wantAlbum:     "beyond old names; everyone's song.",
@@ -45,6 +45,26 @@ func TestTags(t *testing.T) {
 			wantGenre:     "",
 			wantYear:      2023,
 			wantTrack:     10,
+		},
+		{
+			audioFilePath: completeTogawaFilePath,
+			wantTitle:     "好き好き大好き",
+			wantArtist:    "戸川純",
+			wantAlbum:     "わたしが鳴こうホトトギス",
+			wantComment:   "Virgin Babylon Records - VBR-038",
+			wantGenre:     "Avant-Garde Pop",
+			wantYear:      2016,
+			wantTrack:     2,
+		},
+		{
+			audioFilePath: missingTogawaFilePath,
+			wantTitle:     "",
+			wantArtist:    "",
+			wantAlbum:     "",
+			wantComment:   "",
+			wantGenre:     "",
+			wantYear:      0,
+			wantTrack:     0,
 		},
 	} {
 		audioFile, err := Open(testCase.audioFilePath)
@@ -112,7 +132,7 @@ func TestTags(t *testing.T) {
 }
 
 func TestTagStringGettersClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
+	audioFile, err := Open(completeBoaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
@@ -139,7 +159,7 @@ func TestTagStringGettersClosedFile(t *testing.T) {
 }
 
 func TestTagIntGettersClosedFile(t *testing.T) {
-	audioFile, err := Open(boaFilePath)
+	audioFile, err := Open(completeBoaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}

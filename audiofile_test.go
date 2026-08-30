@@ -8,7 +8,7 @@ import (
 )
 
 func TestOpen(t *testing.T) {
-	for _, path := range []string{boaFilePath, venetianFilePath, wiynFilePath} {
+	for _, path := range []string{completeBoaFilePath, completeVenetianFilePath, completeWiynFilePath} {
 		audioFile, err := Open(path)
 		if err != nil {
 			t.Fatalf("Open(%s): %v", path, err)
@@ -54,7 +54,7 @@ func TestOpenInvalidFile(t *testing.T) {
 }
 
 func TestCloseIdempotent(t *testing.T) {
-	file, err := Open(boaFilePath)
+	file, err := Open(completeBoaFilePath)
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
@@ -69,7 +69,7 @@ func TestCloseIdempotent(t *testing.T) {
 
 func TestIsValid(t *testing.T) {
 	t.Run("opened valid file", func(t *testing.T) {
-		for _, path := range []string{boaFilePath, venetianFilePath, wiynFilePath} {
+		for _, path := range []string{completeBoaFilePath, completeVenetianFilePath, completeWiynFilePath} {
 			audioFile, err := Open(path)
 			if err != nil {
 				t.Fatalf("Open(%s): %v", path, err)
@@ -83,7 +83,7 @@ func TestIsValid(t *testing.T) {
 	})
 
 	t.Run("closed file", func(t *testing.T) {
-		audioFile, err := Open(boaFilePath)
+		audioFile, err := Open(completeBoaFilePath)
 		if err != nil {
 			t.Fatalf("Open: %v", err)
 		}
