@@ -1,8 +1,16 @@
 package wiretag
 
-// #include <stdlib.h>
 // #include <taglib/tag_c.h>
 import "C"
+
+// Pending TODO:
+// - taglib_tag_set_title
+// - taglib_tag_set_artist
+// - taglib_tag_set_album
+// - taglib_tag_set_comment
+// - taglib_tag_set_genre
+// - taglib_tag_set_year
+// - taglib_tag_set_track
 
 func (file *AudioFile) Title() (string, error) {
 	if !file.isFileOpened() {
