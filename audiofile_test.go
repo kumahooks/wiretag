@@ -66,3 +66,39 @@ func TestCloseIdempotent(t *testing.T) {
 		t.Fatal("Close: handle, tag or audioProperties not nilled")
 	}
 }
+
+func TestIsValid(t *testing.T) {
+	t.Run("opened valid file", func(t *testing.T) {
+		for _, path := range []string{boaFilePath, venetianFilePath, wiynFilePath} {
+			audioFile, err := Open(path)
+			if err != nil {
+				t.Fatalf("Open(%s): %v", path, err)
+			}
+			t.Cleanup(audioFile.Close)
+
+			if !audioFile.IsValid() {
+				t.Errorf("IsValid(%s): got false, want true", path)
+			}
+		}
+	})
+
+	t.Run("closed file", func(t *testing.T) {
+		audioFile, err := Open(boaFilePath)
+		if err != nil {
+			t.Fatalf("Open: %v", err)
+		}
+		audioFile.Close()
+
+		if audioFile.IsValid() {
+			t.Error("IsValid(closed): got true, want false")
+		}
+	})
+
+	t.Run("nil receiver", func(t *testing.T) {
+		var audioFile *AudioFile
+
+		if audioFile.IsValid() {
+			t.Error("IsValid(nil): got true, want false")
+		}
+	})
+}

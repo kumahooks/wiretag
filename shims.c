@@ -6,3 +6,7 @@ const char* wiretag_strarray_at(char** array, int index)
 	return array[index];
 }
 
+void wiretag_init(void)
+{
+	taglib_set_string_management_enabled(0);
+}

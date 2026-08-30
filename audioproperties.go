@@ -1,6 +1,5 @@
 package wiretag
 
-// #include <stdlib.h>
 // #include <taglib/tag_c.h>
 import "C"
 

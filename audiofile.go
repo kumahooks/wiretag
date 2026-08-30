@@ -39,7 +39,7 @@ func Open(filePath string) (*AudioFile, error) {
 		return nil, ErrOpen
 	}
 
-	if !IsValidAudioFile(fileHandle) {
+	if C.taglib_file_is_valid(fileHandle) != 1 {
 		freeAudioFile(fileHandle)
 		return nil, ErrInvalid
 	}
@@ -64,12 +64,14 @@ func (file *AudioFile) Close() {
 	file.audioProperties = nil
 }
 
-func (file *AudioFile) isFileOpened() bool {
-	return file != nil && file.handle != nil
+// IsValid reports whether the audio file is open, readable, and valid information for the Tag and/or AudioProperties
+// was found. It is the direct equivalent of taglib_file_is_valid.
+func (file *AudioFile) IsValid() bool {
+	return file.isFileOpened() && C.taglib_file_is_valid(file.handle) == 1
 }
 
-func IsValidAudioFile(fileHandle *C.TagLib_File) bool {
-	return C.taglib_file_is_valid(fileHandle) == 1
+func (file *AudioFile) isFileOpened() bool {
+	return file != nil && file.handle != nil
 }
 
 func freeAudioFile(fileHandle *C.TagLib_File) {

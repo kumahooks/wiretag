@@ -3,14 +3,7 @@ package wiretag
 // #include <taglib/tag_c.h>
 import "C"
 
-// Pending TODO:
-// - taglib_tag_set_title
-// - taglib_tag_set_artist
-// - taglib_tag_set_album
-// - taglib_tag_set_comment
-// - taglib_tag_set_genre
-// - taglib_tag_set_year
-// - taglib_tag_set_track
+import "unsafe"
 
 func (file *AudioFile) Title() (string, error) {
 	if !file.isFileOpened() {
@@ -19,10 +12,9 @@ func (file *AudioFile) Title() (string, error) {
 
 	cTitleString := C.taglib_tag_title(file.tag)
 	if cTitleString == nil {
-		C.taglib_tag_free_strings()
 		return "", nil
 	}
-	defer C.taglib_tag_free_strings()
+	defer C.taglib_free(unsafe.Pointer(cTitleString))
 
 	return C.GoString(cTitleString), nil
 }
@@ -34,10 +26,9 @@ func (file *AudioFile) Artist() (string, error) {
 
 	cArtistString := C.taglib_tag_artist(file.tag)
 	if cArtistString == nil {
-		C.taglib_tag_free_strings()
 		return "", nil
 	}
-	defer C.taglib_tag_free_strings()
+	defer C.taglib_free(unsafe.Pointer(cArtistString))
 
 	return C.GoString(cArtistString), nil
 }
@@ -49,10 +40,9 @@ func (file *AudioFile) Album() (string, error) {
 
 	cAlbumString := C.taglib_tag_album(file.tag)
 	if cAlbumString == nil {
-		C.taglib_tag_free_strings()
 		return "", nil
 	}
-	defer C.taglib_tag_free_strings()
+	defer C.taglib_free(unsafe.Pointer(cAlbumString))
 
 	return C.GoString(cAlbumString), nil
 }
@@ -64,10 +54,9 @@ func (file *AudioFile) Comment() (string, error) {
 
 	cCommentString := C.taglib_tag_comment(file.tag)
 	if cCommentString == nil {
-		C.taglib_tag_free_strings()
 		return "", nil
 	}
-	defer C.taglib_tag_free_strings()
+	defer C.taglib_free(unsafe.Pointer(cCommentString))
 
 	return C.GoString(cCommentString), nil
 }
@@ -79,10 +68,9 @@ func (file *AudioFile) Genre() (string, error) {
 
 	cGenreString := C.taglib_tag_genre(file.tag)
 	if cGenreString == nil {
-		C.taglib_tag_free_strings()
 		return "", nil
 	}
-	defer C.taglib_tag_free_strings()
+	defer C.taglib_free(unsafe.Pointer(cGenreString))
 
 	return C.GoString(cGenreString), nil
 }
