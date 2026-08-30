@@ -196,3 +196,51 @@ func TestCommentNilFile(t *testing.T) {
 		t.Fatalf("Comment(nil): got %v, want ErrFileClosed", err)
 	}
 }
+
+func TestGenre(t *testing.T) {
+	for _, testCase := range []struct {
+		audioFilePath string
+		wantGenre     string
+	}{
+		{boaFilePath, "misc"},
+		{venetianFilePath, "Electronic"},
+		{wiynFilePath, ""},
+	} {
+		audioFile, err := Open(testCase.audioFilePath)
+		if err != nil {
+			t.Fatalf("Open(%s): %v", testCase.audioFilePath, err)
+		}
+		t.Cleanup(audioFile.Close)
+
+		gotGenre, err := audioFile.Genre()
+		if err != nil {
+			t.Fatalf("Genre(%s): %v", testCase.audioFilePath, err)
+		}
+		if gotGenre != testCase.wantGenre {
+			t.Fatalf("Genre(%s): got %q, want %q", testCase.audioFilePath, gotGenre, testCase.wantGenre)
+		}
+	}
+}
+
+func TestGenreClosedFile(t *testing.T) {
+	audioFile, err := Open(boaFilePath)
+	if err != nil {
+		t.Fatalf("Open: %v", err)
+	}
+	audioFile.Close()
+
+	gotGenre, err := audioFile.Genre()
+	if !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Genre(closed): got %v, want ErrFileClosed", err)
+	}
+	if gotGenre != "" {
+		t.Fatalf("Genre(closed): got %q, want empty string", gotGenre)
+	}
+}
+
+func TestGenreNilFile(t *testing.T) {
+	var file *AudioFile
+	if _, err := file.Genre(); !errors.Is(err, ErrFileClosed) {
+		t.Fatalf("Genre(nil): got %v, want ErrFileClosed", err)
+	}
+}
