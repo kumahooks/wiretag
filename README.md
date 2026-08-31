@@ -1,6 +1,8 @@
 Introduction
 ============
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/kumahooks/wiretag.svg)](https://pkg.go.dev/github.com/kumahooks/wiretag)
+
 The wiretag package is an idiomatic Go bindings for [TagLib](https://taglib.org/). wiretag wraps the C bindings taglib itself ships (`tag_c.h`) with Go-native error handling and explicit memory ownership.
 
 This release was built and tested against taglib 2.3.1.
